@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART SCHOOL MANAGEMENT SYSTEM</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e67e22;
+            --bg: #f0f2f5;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); }
+        
+        /* HERO SECTION */
+        .hero-section {
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify_content: center;
+            text-align: center;
+            color: white;
+            transition: background-image 0.5s ease-in-out;
+        }
+        
+        .hero-content { 
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            padding: 50px 80px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .hero-title { font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-size: 3rem; }
+
+        /* MODULE CARDS */
+        .module-card {
+            background: white; padding: 30px; border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: all 0.4s ease;
+            cursor: pointer; text-align: center; height: 100%; border: none;
+        }
+        .module-card:hover { transform: translateY(-15px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .module-card i { font-size: 50px; margin-bottom: 20px; color: var(--primary); transition: 0.3s; }
+        .module-card:hover i { color: var(--accent); transform: scale(1.1); }
+
+        .section-view { display: none; padding: 30px 0; }
+        .active-view { display: block; }
+        
+        .dashboard-header { 
+            background: linear-gradient(135deg, #fff, #f8f9fa); 
+            border-left: 6px solid var(--accent);
+            padding: 25px; border-radius: 8px; margin-bottom: 30px; 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .card-custom { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; }
+        .btn-icon { cursor: pointer; color: #7f8c8d; margin-left: 10px; transition: 0.2s; }
+        
+        .badge-id { font-family: monospace; background: #eee; color: #333; padding: 2px 6px; border-radius: 4px; }
+        .badge-late { background-color: #dc3545; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .assignment-item { border-left: 3px solid var(--primary); padding-left: 10px; margin-bottom: 10px; background: #f8f9fa; padding: 10px; border-radius: 0 5px 5px 0; }
+        
+        .fee-status-unpaid { color: red; font-weight: bold; }
+        .fee-status-paid { color: green; font-weight: bold; }
+        .fee-status-pending { color: orange; font-weight: bold; }
+        
+        .data-controls button { margin: 5px; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#" onclick="showHome()"><i class="fas fa-graduation-cap"></i> SMART SCHOOL MANAGEMENT SYSTEM</a>
+            <div class="d-flex">
+                <button class="btn btn-outline-warning btn-sm me-2" onclick="openProfileModal()" id="myProfileBtn" style="display:none;">My Profile</button>
+                <button class="btn btn-outline-light btn-sm" onclick="showHome()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home View -->
+    <div id="home-view" class="section-view active-view">
+        <div class="hero-section" id="heroImage">
+            <div class="hero-content">
+                <h1 class="hero-title">SMART SCHOOL</h1>
+                <h3 class="fw-light">MANAGEMENT SYSTEM</h3>
+                <p class="lead mt-3">Secure. Efficient. Reliable.</p>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-2"><div class="module-card" onmouseover="changeHero('admin')" onclick="openModal('Admin')"><i class="fas fa-user-shield"></i><h5>Admin</h5></div></div>
+                <div class="col-md-2"><div class="module-card" onmouseover="changeHero('management')" onclick="openModal('Management')"><i class="fas fa-users-cog"></i><h5>Management</h5></div></div>
+                <div class="col-md-2"><div class="module-card" onmouseover="changeHero('teacher')" onclick="openModal('Teacher')"><i class="fas fa-chalkboard-user"></i><h5>Teacher</h5></div></div>
+                <div class="col-md-2"><div class="module-card" onmouseover="changeHero('student')" onclick="openModal('Student')"><i class="fas fa-user-graduate"></i><h5>Student</h5></div></div>
+                <div class="col-md-2"><div class="module-card" onmouseover="changeHero('parent')" onclick="openModal('Parent')"><i class="fas fa-house-user"></i><h5>Parent</h5></div></div>
+            </div>
+            
+            <!-- DATA CONTROLS (RESTORED) -->
+            <div class="text-center mt-5 mb-5 data-controls">
+                <hr class="mb-4">
+                <h5 class="text-muted mb-3">Database Management</h5>
+                
+                <button class="btn btn-success px-4" onclick="downloadDB()">
+                    <i class="fas fa-file-download"></i> Save Data to File
+                </button>
+                
+                <button class="btn btn-primary px-4" onclick="importDB()">
+                    <i class="fas fa-file-upload"></i> Load Data from File
+                </button>
+                
+                <button class="btn btn-info text-white px-4" onclick="viewRawDB()">
+                    <i class="fas fa-database"></i> View Raw DB
+                </button>
+                
+                <button class="btn btn-outline-danger px-4" onclick="resetSystem()">
+                    <i class="fas fa-trash-alt"></i> Reset Database
+                </button>
+                
+                <div class="mt-3">
+                    <button class="btn btn-warning btn-sm" onclick="simulateTimeJump()">Simulate 3 Days Passed (Trigger Auto-Delete)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="loginId" class="form-control mb-3" placeholder="ID / Username">
+                    <input type="password" id="loginPass" class="form-control mb-3" placeholder="Password">
+                    <button class="btn btn-primary w-100" onclick="performLogin()">LOGIN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Details Modal -->
+    <div class="modal fade" id="adminDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="detailTitle">User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detailBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Universal Profile Edit Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit My Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Unique ID (Fixed):</label>
+                    <input type="text" id="editProfileId" class="form-control mb-2" disabled>
+                    <label>Name:</label>
+                    <input type="text" id="editProfileName" class="form-control mb-2">
+                    <hr>
+                    <h6 class="text-danger">Change Password</h6>
+                    <label>Old Password:</label>
+                    <input type="password" id="editProfileOldPass" class="form-control mb-2" placeholder="Required to save">
+                    <label>New Password (Min 5 chars):</label>
+                    <input type="text" id="editProfilePass" class="form-control mb-2">
+                    <button class="btn btn-success w-100" onclick="saveProfileChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Edit Modal -->
+    <div class="modal fade" id="manageEditModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editUserType">
+                    <input type="hidden" id="editUserId">
+                    <label>Name:</label>
+                    <input type="text" id="editUserName" class="form-control mb-2">
+                    <label>Password (Min 5 chars):</label>
+                    <input type="text" id="editUserPass" class="form-control mb-2">
+                    <button class="btn btn-primary w-100" onclick="saveUserEdit()">Update User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fee Verification Modal -->
+    <div class="modal fade" id="feeVerifyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Verify Fee Receipt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h6 id="feeVerifyName"></h6>
+                    <div class="border p-3 mb-3 bg-light">
+                        <p class="mb-0">Receipt File:</p>
+                        <h4 class="text-primary" id="feeVerifyFile"></h4>
+                    </div>
+                    <input type="hidden" id="feeVerifyId">
+                    <button class="btn btn-success w-100 mb-2" onclick="processFeeDecision('Paid')">Approve (Mark Paid)</button>
+                    <button class="btn btn-danger w-100" onclick="processFeeDecision('Unpaid')">Reject (Mark Unpaid)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. ADMIN DASHBOARD -->
+    <div id="admin-view" class="container section-view">
+        <div class="dashboard-header d-flex justify-content-between align-items-center">
+            <div><h2>Admin Dashboard</h2><small>Full System Access</small></div>
+            <div>
+                <div class="input-group">
+                    <input type="text" id="adminSearchId" class="form-control" placeholder="Search Unique ID">
+                    <button class="btn btn-primary" onclick="adminSearch()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-pills mb-3" id="adminTabs">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-managers">Managers</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-teachers">Teachers</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-students">Students</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="tab-managers">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card card-custom p-3">
+                            <h5 class="text-secondary">Add Manager</h5>
+                            <input type="text" id="newMName" placeholder="Name" class="form-control mb-2">
+                            <input type="password" id="newMPass" placeholder="Pass (5+ chars)" class="form-control mb-2">
+                            <button class="btn btn-success w-100" onclick="addManager()">Auto-Generate ID & Add</button>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card card-custom p-3">
+                            <h5>Management Team</h5>
+                            <ul id="adminManagerList" class="list-group list-group-flush"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-teachers">
+                <div class="card card-custom p-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <h5>All Teachers</h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="switchView('management-view')">Add/Edit Mode</button>
+                    </div>
+                    <ul id="adminTeacherList" class="list-group"></ul>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-students">
+                <div class="card card-custom p-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <h5>All Students</h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="switchView('management-view')">Add/Edit Mode</button>
+                    </div>
+                    <ul id="adminStudentList" class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MANAGEMENT DASHBOARD -->
+    <div id="management-view" class="container section-view">
+        <div class="dashboard-header d-flex justify-content-between align-items-center">
+            <div><h2>Management Portal</h2><h6 id="mgmtNameDisplay" class="text-primary mb-0"></h6></div>
+            <div>
+                <div class="input-group">
+                    <input type="text" id="mgmtSearchId" class="form-control" placeholder="Search Unique ID">
+                    <button class="btn btn-primary" onclick="mgmtSearch()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card card-custom p-3 h-100">
+                    <h5 class="text-success">Add Teacher</h5>
+                    <input type="text" id="newTName" placeholder="Name" class="form-control mb-2">
+                    <input type="password" id="newTPass" placeholder="Pass (5+ chars)" class="form-control mb-2">
+                    <input type="text" id="newTQual" placeholder="Qualification" class="form-control mb-2">
+                    <input type="text" id="newTContact" placeholder="Contact (11 Digits)" class="form-control mb-2">
+                    <button class="btn btn-success w-100" onclick="addTeacher()">Auto-Generate ID & Create</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom p-3 h-100">
+                    <h5 class="text-primary">Add Student</h5>
+                    <input type="text" id="newSName" placeholder="Name" class="form-control mb-2">
+                    <input type="password" id="newSPass" placeholder="Pass (5+ chars)" class="form-control mb-2">
+                    <button class="btn btn-primary w-100" onclick="addStudent()">Auto-Generate ID & Create</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom p-3 h-100">
+                    <h5 class="text-secondary">Fee Requests & Users</h5>
+                    <div style="max-height: 250px; overflow-y: auto;">
+                        <ul id="manageUserList" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. TEACHER DASHBOARD -->
+    <div id="teacher-view" class="container section-view">
+        <div class="dashboard-header">
+            <h2>Teacher Portal</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-custom p-3 mb-3">
+                    <h5 class="text-primary"><i class="fas fa-layer-group"></i> My Classes</h5>
+                    <div class="input-group mb-3">
+                        <input type="text" id="newClassName" class="form-control" placeholder="Class Name">
+                        <button class="btn btn-outline-primary" onclick="createClass()">+</button>
+                    </div>
+                    <ul id="teacherClassList" class="list-group list-group-flush mb-3"></ul>
+                    <hr>
+                    <div id="classActionArea" class="d-none">
+                        <div class="bg-light p-2 rounded mb-3 text-center">
+                            <strong id="selectedClassDisplay" class="text-primary"></strong>
+                        </div>
+                        <div class="mb-3 border-bottom pb-3">
+                            <label class="small fw-bold text-success"><i class="fas fa-plus"></i> Create Assignment</label>
+                            <input type="text" id="assignTitleInput" class="form-control form-control-sm mb-1" placeholder="Title">
+                            <label class="small">Due Date:</label>
+                            <input type="date" id="assignDateInput" class="form-control form-control-sm mb-1">
+                            <button class="btn btn-success btn-sm w-100" onclick="createAssignment()">Set Assignment</button>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold">Add Student ID:</label>
+                            <div class="input-group">
+                                <input type="text" id="addStudentIdInput" class="form-control form-control-sm" placeholder="ID">
+                                <button class="btn btn-outline-primary btn-sm" onclick="addStudentToClass()">Add</button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="small fw-bold">Enrolled Students:</label>
+                            <div class="border rounded p-2" style="max-height: 100px; overflow-y: auto; background: #fff;" id="enrolledStudentsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card card-custom p-3 mb-3">
+                    <h5 class="mb-3">Search & Grading</h5>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-5">
+                            <label class="small">By Class:</label>
+                            <select id="attendanceClassSelect" class="form-select" onchange="filterStudentsByClass()"><option value="">1. Select Class</option></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small">By Student:</label>
+                            <select id="teacherStudentSelect" class="form-select" onchange="loadStudentProfile()"><option value="">2. Select Student</option></select>
+                        </div>
+                        <div class="col-md-3">
+                             <label class="small">Direct ID:</label>
+                             <div class="input-group">
+                                <input type="text" id="directSearchId" class="form-control" placeholder="ID">
+                                <button class="btn btn-primary" onclick="searchStudentById()"><i class="fas fa-search"></i></button>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="studentProfilePanel" class="d-none">
+                    <div id="teacherBadBadge" class="alert alert-danger d-none fw-bold"><i class="fas fa-exclamation-triangle"></i> ALERT: Student is performing poorly!</div>
+                    <div class="alert alert-info py-1 d-flex justify-content-between">
+                        <span><i class="fas fa-user"></i> Record for: <strong id="profileNameDisplay"></strong></span>
+                        <span id="teacherFeeStatus" class="badge bg-secondary">Fee Status: Unknown</span>
+                    </div>
+                    <div class="mb-3 text-end" id="teacherFeeActions"></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card card-custom p-3 h-100">
+                                <h6>Add Daily Record</h6>
+                                <input type="date" id="recordDate" class="form-control mb-2">
+                                <input type="text" id="recordTask" class="form-control mb-2" placeholder="Task / Note">
+                                <select id="recordAtt" class="form-select mb-2"><option value="Present">Present</option><option value="Absent">Absent</option><option value="Late">Late</option></select>
+                                <button class="btn btn-primary w-100" onclick="addDailyRecord()">Save Record</button>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card card-custom p-2 mb-2 border-warning">
+                                <h6 class="text-warning">Pending Grading</h6>
+                                <div style="max-height: 150px; overflow-y:auto;">
+                                    <table class="table table-sm"><thead><tr><th>Task</th><th>File</th><th>Grade</th></tr></thead><tbody id="teacherGradingBody"></tbody></table>
+                                </div>
+                            </div>
+                            <div class="card card-custom p-3 h-100">
+                                <h6>Performance History</h6>
+                                <div style="max-height: 200px; overflow-y:auto;">
+                                    <table class="table table-sm table-striped"><thead class="table-light"><tr><th>Date</th><th>Task/Type</th><th>Status/Result</th></tr></thead><tbody id="teacherHistoryBody"></tbody></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. STUDENT DASHBOARD -->
+    <div id="student-view" class="container section-view">
+        <div class="dashboard-header">
+            <div><h2>Student Portal</h2><small>My Learning</small></div>
+            <div class="text-end"><h5 id="stNameDisplay"></h5><small class="badge bg-dark" id="stIdDisplay"></small></div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card card-custom p-3 mb-3">
+                    <h5 class="text-success"><i class="fas fa-tasks"></i> Pending Assignments</h5>
+                    <div id="studentAssignmentsList" style="max-height:250px; overflow-y:auto;"></div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="card card-custom p-3 h-100">
+                    <h5>Attendance & Results</h5>
+                    <ul class="nav nav-tabs mb-2" id="stTabs">
+                        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#st-att">Attendance</a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#st-res">Results</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="st-att">
+                            <div style="max-height:300px; overflow-y:auto;"><table class="table table-sm"><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody id="stAttendanceBody"></tbody></table></div>
+                        </div>
+                        <div class="tab-pane fade" id="st-res">
+                            <div id="stBadBadge" class="alert alert-danger d-none py-1 small">POOR PERFORMANCE</div>
+                            <div style="max-height:300px; overflow-y:auto;"><table class="table table-sm table-hover"><thead class="table-dark"><tr><th>Date</th><th>Task</th><th>Score</th></tr></thead><tbody id="stResultsBody"></tbody></table></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. PARENT DASHBOARD -->
+    <div id="parent-view" class="container section-view">
+        <div class="dashboard-header"><h2>Parent Portal</h2></div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card card-custom p-4 mb-3">
+                    <h4 id="parentChildName"></h4>
+                    <div id="parentAlert" class="alert alert-danger d-none fw-bold">ALERT: Your child is performing poorly!</div>
+                    <table class="table table-bordered mt-3"><tbody id="parentTableBody"></tbody></table>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom p-3 mb-3 border-danger">
+                    <h5><i class="fas fa-money-bill"></i> Fee Status</h5>
+                    <h6 id="parentFeeStatus" class="fw-bold">Paid</h6>
+                    <div id="parentFeeUploadArea" class="d-none mt-2">
+                        <label class="small text-danger">Upload Fee Receipt Image:</label>
+                        <input type="file" id="feeReceiptInput" class="form-control mb-1">
+                        <button class="btn btn-danger w-100" onclick="uploadFee()">Upload Receipt</button>
+                    </div>
+                </div>
+                <div class="card card-custom p-3">
+                    <h5><i class="fas fa-chalkboard-teacher"></i> Class Teacher Info</h5>
+                    <div id="parentTeacherInfo"><p class="text-muted small">No class assigned yet.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const MGMT_MASTER_CODE = "54321";
+        const ADMIN_MASTER_CODE = "98765";
+        function isValidId(id) { const re = /^\d{5,}$/; return re.test(id); }
+        function isValidPass(pass) { if (pass.length < 5) return false; const regex = /^[a-zA-Z0-9_]+$/; return regex.test(pass); }
+        const heroImages = {'admin':'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1950','management':'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1950','teacher':'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1950','student':'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1950','parent':'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=1950'};
+        function changeHero(role) { document.getElementById('heroImage').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${heroImages[role]}')`; }
+        let db = JSON.parse(localStorage.getItem('schoolDB_v28')) || { students: [], teachers: [], admins: [{ name: 'FAIZ', pass: 'admin123' }, { name: 'WASI', pass: 'admin123' }], management: [{ name: 'Main Manager', id: '10001', pass: '12345' }] };
+        let currentUser = null, tempRole = '', currentClassIndex = -1;
+        function saveDB() { localStorage.setItem('schoolDB_v28', JSON.stringify(db)); }
+        function resetSystem() { localStorage.removeItem('schoolDB_v28'); location.reload(); }
+        function viewRawDB() { alert(localStorage.getItem('schoolDB_v28') || "Empty"); }
+        function getToday() { return new Date().toISOString().split('T')[0]; }
+        function generateUniqueID() { let id; let exists = true; while(exists) { id = Math.floor(10000 + Math.random() * 90000).toString(); exists = db.students.some(s=>s.id===id) || db.teachers.some(t=>t.id===id) || db.management.some(m=>m.id===id); } return id; }
+        
+        // BACKUP
+        function downloadDB() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const node = document.createElement('a'); node.setAttribute("href", dataStr); node.setAttribute("download", "school_data.txt"); document.body.appendChild(node); node.click(); node.remove(); }
+        function importDB() { const input = document.createElement('input'); input.type = 'file'; input.onchange = e => { const file = e.target.files[0]; const reader = new FileReader(); reader.readAsText(file,'UTF-8'); reader.onload = re => { localStorage.setItem('schoolDB_v28', re.target.result); location.reload(); } }; input.click(); }
+
+        // TIME SIM
+        function simulateTimeJump() {
+            if(!confirm("Simulate 3 days passed?")) return;
+            let modified = false; const threeDaysAgo = new Date(); threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+            db.students.forEach(s => { if(s.feeData && s.feeData.status === 'Unpaid' && s.feeData.notificationDate) { s.feeData.notificationDate = threeDaysAgo.toISOString(); modified = true; } });
+            if(modified) { saveDB(); alert("Time skipped! Login as Admin to trigger check."); location.reload(); } else alert("No unpaid students.");
+        }
+        function checkAutoDeletion() {
+            const today = new Date(); let deletedNames = [];
+            db.students = db.students.filter(s => {
+                if(s.feeData && s.feeData.status === 'Unpaid' && s.feeData.notificationDate) {
+                    const diff = Math.ceil(Math.abs(today - new Date(s.feeData.notificationDate)) / (1000 * 60 * 60 * 24));
+                    if(diff > 2) { deletedNames.push(s.name); return false; }
+                } return true; 
+            });
+            if(deletedNames.length > 0) { saveDB(); alert("SYSTEM ALERT: Auto-deleted students (Unpaid > 2 days):\n" + deletedNames.join("\n")); }
+        }
+
+        // AUTH
+        function showHome() { document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active-view')); document.getElementById('home-view').classList.add('active-view'); document.getElementById('myProfileBtn').style.display = 'none'; currentUser = null; }
+        function openModal(r) { tempRole=r; document.getElementById('modalTitle').innerText=r+" Login"; document.getElementById('loginId').value=''; document.getElementById('loginPass').value=''; new bootstrap.Modal(document.getElementById('loginModal')).show(); }
+        function performLogin() {
+            const id = document.getElementById('loginId').value, pass = document.getElementById('loginPass').value; let success = false;
+            if(['Admin','Management','Teacher'].includes(tempRole)) checkAutoDeletion();
+            if (tempRole === 'Admin') { const a = db.admins.find(a => a.name === id && a.pass === pass); if(a) { success = true; currentUser = {name: id, id: 'admin', role:'admin', pass: a.pass}; loadAdminData(); switchView('admin-view'); } }
+            else if (tempRole === 'Management') { const m = db.management.find(x => x.id === id && x.pass === pass); if(m) { success = true; currentUser = m; currentUser.role = 'management'; loadManagementData(); switchView('management-view'); document.getElementById('mgmtNameDisplay').innerText = m.name; } }
+            else if (tempRole === 'Teacher') { const t = db.teachers.find(x => x.id === id && x.pass === pass); if(t) { success = true; currentUser = t; currentUser.role = 'teacher'; loadTeacherData(); switchView('teacher-view'); } }
+            else if (tempRole === 'Student') { const s = db.students.find(x => x.id === id && x.pass === pass); if(s) { success = true; currentUser = s; currentUser.role = 'student'; loadStudentData(); switchView('student-view'); } }
+            else if (tempRole === 'Parent') { const s = db.students.find(x => x.id === id && x.pass === pass); if(s) { success = true; currentUser = s; currentUser.role = 'parent'; loadParentData(); switchView('parent-view'); } }
+            if(success) { bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide(); if(currentUser.role!=='parent') document.getElementById('myProfileBtn').style.display='inline-block'; } else alert("Invalid Credentials");
+        }
+        function switchView(id) { document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active-view')); document.getElementById(id).classList.add('active-view'); }
+
+        // PROFILE
+        function openProfileModal() { document.getElementById('editProfileId').value = currentUser.id||currentUser.name; document.getElementById('editProfileName').value = currentUser.name; document.getElementById('editProfileOldPass').value = ''; document.getElementById('editProfilePass').value = currentUser.pass||''; new bootstrap.Modal(document.getElementById('profileModal')).show(); }
+        function saveProfileChanges() {
+            const old = document.getElementById('editProfileOldPass').value, newN = document.getElementById('editProfileName').value, newP = document.getElementById('editProfilePass').value;
+            if(old !== currentUser.pass) { alert("FAILED: Incorrect Old Password."); return; }
+            if(!isValidPass(newP)) { alert("FAILED: Password min 5 chars (A-Z,0-9,_)"); return; }
+            if(currentUser.role==='student') db.students.find(x=>x.id===currentUser.id).pass=newP;
+            else if(currentUser.role==='teacher') db.teachers.find(x=>x.id===currentUser.id).pass=newP;
+            else if(currentUser.role==='management') db.management.find(x=>x.id===currentUser.id).pass=newP;
+            else if(currentUser.role==='admin') db.admins.find(x=>x.name===currentUser.name).pass=newP;
+            currentUser.pass = newP; saveDB(); alert("Updated!"); location.reload();
+        }
+
+        // ADMIN
+        function addManager() {
+            const name = document.getElementById('newMName').value.trim(), pass = document.getElementById('newMPass').value.trim();
+            if(!name || !isValidPass(pass)) return alert("Check inputs.");
+            const newId = generateUniqueID(); db.management.push({name:name, id:newId, pass:pass}); saveDB(); alert(`Added! ID: ${newId}`); loadAdminData();
+        }
+        function loadAdminData() {
+            const ml = document.getElementById('adminManagerList'); ml.innerHTML = ''; db.management.forEach(m => ml.innerHTML+=`<li class="list-group-item d-flex justify-content-between"><span>${m.name} (${m.id})</span><div><button class="btn btn-info btn-sm text-white" onclick="viewDetail('mgmt','${m.id}')">Info</button><button class="btn btn-danger btn-sm" onclick="adminDel('mgmt','${m.id}')">Del</button></div></li>`);
+            const tl = document.getElementById('adminTeacherList'); tl.innerHTML = ''; db.teachers.forEach(t => tl.innerHTML+=`<li class="list-group-item d-flex justify-content-between"><span>${t.name} (${t.id})</span><div><button class="btn btn-info btn-sm text-white" onclick="viewDetail('teacher','${t.id}')">Info</button><button class="btn btn-danger btn-sm" onclick="adminDel('teacher','${t.id}')">Del</button></div></li>`);
+            const sl = document.getElementById('adminStudentList'); sl.innerHTML = ''; db.students.forEach(s => sl.innerHTML+=`<li class="list-group-item d-flex justify-content-between"><span>${s.name} (${s.id})</span><div><button class="btn btn-info btn-sm text-white" onclick="viewDetail('student','${s.id}')">Info</button><button class="btn btn-danger btn-sm" onclick="adminDel('student','${s.id}')">Del</button></div></li>`);
+        }
+        function viewDetail(type, id) {
+            const mb = document.getElementById('detailBody'); mb.innerHTML = '';
+            if(type==='student') { const s = db.students.find(x=>x.id===id); mb.innerHTML=`ID: ${s.id}<br>Pass: ${s.pass}<br>Fee: ${s.feeData?s.feeData.status:'Paid'}`; }
+            else if(type==='teacher') { const t = db.teachers.find(x=>x.id===id); mb.innerHTML=`ID: ${t.id}<br>Pass: ${t.pass}<br>Contact: ${t.contact}`; }
+            else { const m = db.management.find(x=>x.id===id); mb.innerHTML=`ID: ${m.id}<br>Pass: ${m.pass}`; }
+            new bootstrap.Modal(document.getElementById('adminDetailModal')).show();
+        }
+        function adminDel(type, id) {
+            if(type==='mgmt') { if(prompt("Enter Code:")!==ADMIN_MASTER_CODE) return alert("Wrong Code"); db.management=db.management.filter(x=>x.id!==id); }
+            else { if(!confirm("Delete?")) return; if(type==='teacher') db.teachers=db.teachers.filter(x=>x.id!==id); else db.students=db.students.filter(x=>x.id!==id); }
+            saveDB(); loadAdminData();
+        }
+        function adminSearch() { const id = document.getElementById('adminSearchId').value.trim(); if(db.management.some(x=>x.id===id)) viewDetail('mgmt',id); else if(db.teachers.some(x=>x.id===id)) viewDetail('teacher',id); else if(db.students.some(x=>x.id===id)) viewDetail('student',id); else alert("Not found"); }
+
+        // MGMT
+        function addTeacher() {
+            const name = document.getElementById('newTName').value.trim(), pass = document.getElementById('newTPass').value.trim(), cont = document.getElementById('newTContact').value.trim();
+            if(!name || !isValidPass(pass) || !/^\d{11}$/.test(cont)) return alert("Check inputs.");
+            const newId = generateUniqueID(); db.teachers.push({name:name, id:newId, pass:pass, qual:document.getElementById('newTQual').value, contact:cont, classes:[]}); saveDB(); alert(`Added! ID: ${newId}`); loadManagementData();
+        }
+        function addStudent() {
+            const name = document.getElementById('newSName').value.trim(), pass = document.getElementById('newSPass').value.trim();
+            if(!name || !isValidPass(pass)) return alert("Check inputs.");
+            const newId = generateUniqueID(); db.students.push({name:name, id:newId, pass:pass, records:[], feeData:{status:'Paid'}}); saveDB(); alert(`Added! ID: ${newId}`); loadManagementData();
+        }
+        function loadManagementData() {
+            const l = document.getElementById('manageUserList'); l.innerHTML = '';
+            db.students.forEach(s => { if(s.feeData.status==='Pending Management') l.innerHTML+=`<li class="list-group-item bg-warning bg-opacity-25 d-flex justify-content-between"><span>Verify Fee: ${s.name}</span><button class="btn btn-sm btn-primary" onclick="verifyFee('${s.id}')">Verify</button></li>`; });
+            db.teachers.forEach(t => l.innerHTML+=`<li class="list-group-item d-flex justify-content-between">T: ${t.name} (${t.id}) <div><i class="fas fa-edit btn-icon" onclick="openEditUser('teacher','${t.id}')"></i> <i class="fas fa-trash-alt btn-icon text-danger" onclick="delUser('teacher','${t.id}')"></i></div></li>`);
+            db.students.forEach(s => l.innerHTML+=`<li class="list-group-item d-flex justify-content-between">S: ${s.name} (${s.id}) <div><i class="fas fa-edit btn-icon" onclick="openEditUser('student','${s.id}')"></i> <i class="fas fa-trash-alt btn-icon text-danger" onclick="delUser('student','${s.id}')"></i></div></li>`);
+        }
+        function verifyFee(sid) { const s=db.students.find(x=>x.id===sid); document.getElementById('feeVerifyName').innerText=s.name; document.getElementById('feeVerifyFile').innerText=s.feeData.receipt; document.getElementById('feeVerifyId').value=sid; new bootstrap.Modal(document.getElementById('feeVerifyModal')).show(); }
+        function processFeeDecision(d) { const s=db.students.find(x=>x.id===document.getElementById('feeVerifyId').value); s.feeData.status=d; if(d==='Paid') delete s.feeData.notificationDate; saveDB(); alert("Updated"); bootstrap.Modal.getInstance(document.getElementById('feeVerifyModal')).hide(); loadManagementData(); }
+        function delUser(t, id) { if(prompt("Enter Code:")!==MGMT_MASTER_CODE) return alert("Wrong Code"); if(t==='teacher') db.teachers=db.teachers.filter(x=>x.id!==id); else db.students=db.students.filter(x=>x.id!==id); saveDB(); loadManagementData(); }
+        function openEditUser(t, id) { let u = (t==='teacher')?db.teachers.find(x=>x.id===id):db.students.find(x=>x.id===id); document.getElementById('editUserType').value=t; document.getElementById('editUserId').value=id; document.getElementById('editUserName').value=u.name; document.getElementById('editUserPass').value=u.pass; new bootstrap.Modal(document.getElementById('manageEditModal')).show(); }
+        function saveUserEdit() { const t=document.getElementById('editUserType').value, id=document.getElementById('editUserId').value, p=document.getElementById('editUserPass').value; if(!isValidPass(p)) return alert("Weak pass"); if(t==='teacher') {const x=db.teachers.find(k=>k.id===id); x.name=document.getElementById('editUserName').value; x.pass=p;} else {const x=db.students.find(k=>k.id===id); x.name=document.getElementById('editUserName').value; x.pass=p;} saveDB(); alert("Updated"); bootstrap.Modal.getInstance(document.getElementById('manageEditModal')).hide(); loadManagementData(); }
+        function mgmtSearch() { const id = document.getElementById('mgmtSearchId').value.trim(); if(db.teachers.some(x=>x.id===id)) openEditUser('teacher',id); else if(db.students.some(x=>x.id===id)) openEditUser('student',id); else alert("Not found"); }
+
+        // TEACHER
+        function loadTeacherData() {
+            const l = document.getElementById('teacherClassList'); l.innerHTML = '';
+            currentUser.classes.forEach((c, i) => l.innerHTML+=`<li class="list-group-item d-flex justify-content-between"><span onclick="selectClass(${i})" style="cursor:pointer">${c.name} <span class="badge bg-secondary">${c.students.length}</span></span><button class="btn btn-sm btn-outline-danger py-0" onclick="deleteClass(${i})">X</button></li>`);
+            const s = document.getElementById('attendanceClassSelect'); s.innerHTML='<option value="">1. Select Class</option>'; currentUser.classes.forEach((c, i) => { let o=document.createElement('option'); o.value=i; o.text=c.name; s.appendChild(o); });
+            document.getElementById('classActionArea').classList.add('d-none'); document.getElementById('recordDate').valueAsDate = new Date();
+        }
+        function deleteClass(i) { if(confirm("Delete class?")) { currentUser.classes.splice(i,1); saveDB(); loadTeacherData(); document.getElementById('classActionArea').classList.add('d-none'); } }
+        function createClass() { const n = document.getElementById('newClassName').value.trim(); if(!n) return; if(currentUser.classes.some(c=>c.name.toLowerCase()===n.toLowerCase())) return alert("Name exists"); currentUser.classes.push({name:n, students:[], notices:[], assignments:[]}); saveDB(); loadTeacherData(); }
+        function selectClass(i) { currentClassIndex=i; document.getElementById('selectedClassDisplay').innerText="Managing: "+currentUser.classes[i].name; document.getElementById('classActionArea').classList.remove('d-none'); document.getElementById('attendanceClassSelect').value=i; const l = document.getElementById('enrolledStudentsList'); l.innerHTML=''; currentUser.classes[i].students.forEach(sid => { const s=db.students.find(x=>x.id===sid); l.innerHTML+=`<div class="d-flex justify-content-between mb-1 small"><span>${s?s.name:'Unknown'} (${sid})</span><button class="btn btn-outline-danger btn-sm py-0" onclick="removeStudentFromClass('${sid}')">X</button></div>`; }); filterStudentsByClass(); }
+        function removeStudentFromClass(sid) { if(!confirm("Remove?")) return; currentUser.classes[currentClassIndex].students=currentUser.classes[currentClassIndex].students.filter(x=>x!==sid); saveDB(); loadTeacherData(); selectClass(currentClassIndex); }
+        function addStudentToClass() { const id=document.getElementById('addStudentIdInput').value.trim(); if(!db.students.some(s=>s.id===id)) return alert("Invalid ID"); if(currentUser.classes[currentClassIndex].students.includes(id)) return alert("Added"); currentUser.classes[currentClassIndex].students.push(id); saveDB(); document.getElementById('addStudentIdInput').value=''; loadTeacherData(); selectClass(currentClassIndex); }
+        function createAssignment() { const t=document.getElementById('assignTitleInput').value.trim(), d=document.getElementById('assignDateInput').value; if(!t||!d) return; if(d<getToday()) return alert("Past date"); currentUser.classes[currentClassIndex].assignments.push({title:t, dueDate:d, id:Date.now()}); saveDB(); alert("Created"); }
+        function postClassNotice() { currentUser.classes[currentClassIndex].notices.push({date:new Date().toLocaleDateString(), text:document.getElementById('classNoticeInput').value}); saveDB(); alert("Posted"); }
+        function filterStudentsByClass() { const idx = document.getElementById('attendanceClassSelect').value; const sel = document.getElementById('teacherStudentSelect'); sel.innerHTML='<option value="">2. Select Student</option>'; if(idx==="") return; db.students.forEach(s => { if(currentUser.classes[idx].students.includes(s.id)) { let o=document.createElement('option'); o.value=s.id; o.text=s.name; sel.appendChild(o); }}); }
+        function searchStudentById() { const id=document.getElementById('directSearchId').value.trim(); if(!db.students.find(x=>x.id===id)) return alert("Not found"); document.getElementById('teacherStudentSelect').innerHTML=`<option value="${id}" selected>${db.students.find(x=>x.id===id).name}</option>`; loadStudentProfile(); }
+        function loadStudentProfile() {
+            const sid=document.getElementById('teacherStudentSelect').value; if(!sid) { document.getElementById('studentProfilePanel').classList.add('d-none'); return; } document.getElementById('studentProfilePanel').classList.remove('d-none');
+            const s=db.students.find(x=>x.id===sid); document.getElementById('profileNameDisplay').innerText=s.name+" ("+s.id+")";
+            const fs = document.getElementById('teacherFeeStatus'); const fa = document.getElementById('teacherFeeActions'); fa.innerHTML='';
+            if(s.feeData.status==='Paid') { fs.innerHTML='<span class="fee-status-paid">Paid</span>'; fa.innerHTML=`<button class="btn btn-sm btn-warning" onclick="setFeeUnpaid('${sid}')">New Cycle</button>`; }
+            else if(s.feeData.status==='Pending Teacher Review') { fs.innerHTML='<span class="fee-status-pending">Receipt Uploaded</span>'; fa.innerHTML=`<p class="small mb-1">File: ${s.feeData.receipt}</p><button class="btn btn-sm btn-primary" onclick="forwardFeeToMgmt('${sid}')">Forward</button>`; }
+            else if(s.feeData.status==='Pending Management') fs.innerHTML='<span class="fee-status-pending">Waiting Mgmt</span>';
+            else { fs.innerHTML='<span class="fee-status-unpaid">Unpaid</span>'; fa.innerHTML=`<button class="btn btn-sm btn-outline-danger" onclick="notifyFee('${sid}')">Notify Fee</button>`; }
+            const tb=document.getElementById('teacherHistoryBody'), gb=document.getElementById('teacherGradingBody'); tb.innerHTML=''; gb.innerHTML=''; let tm=0, cm=0;
+            s.records.forEach((r,i) => {
+                if(r.type==='assignment'&&r.status==='Submitted') gb.innerHTML+=`<tr><td>${r.task}</td><td>${r.answer}</td><td><input type="number" id="grade-${i}" style="width:40px"><button class="btn btn-sm btn-success py-0" onclick="gradeStudent('${sid}',${i})">Ok</button></td></tr>`;
+                tb.innerHTML+=`<tr><td>${r.date}</td><td>${r.task}</td><td>${r.marks!=='-'?r.marks:r.status}</td></tr>`; if(!isNaN(r.marks)) { tm+=parseInt(r.marks); cm++; }
+            });
+            if(cm>0 && (tm/cm)<40) document.getElementById('teacherBadBadge').classList.remove('d-none'); else document.getElementById('teacherBadBadge').classList.add('d-none');
+        }
+        function gradeStudent(sid,i) { const v=document.getElementById(`grade-${i}`).value; db.students.find(x=>x.id===sid).records[i].marks=v; db.students.find(x=>x.id===sid).records[i].status='Graded'; saveDB(); loadStudentProfile(); }
+        function addDailyRecord() { const d=document.getElementById('recordDate').value, st=document.getElementById('recordAtt').value, sid=document.getElementById('teacherStudentSelect').value; const s=db.students.find(x=>x.id===sid); const ex=s.records.find(r=>r.type==='rec'&&r.date===d); if(ex) { if(ex.status==='Present') return alert("Already Present"); if(ex.status==='Absent'&&st==='Present') return alert("Cannot change Absent->Present"); ex.status=st; } else s.records.push({type:'rec', date:d, task:document.getElementById('recordTask').value, status:st, marks:'-'}); saveDB(); loadStudentProfile(); }
+        function setFeeUnpaid(sid) { db.students.find(x=>x.id===sid).feeData={status:'Unpaid'}; saveDB(); loadStudentProfile(); }
+        function notifyFee(sid) { const s=db.students.find(x=>x.id===sid); s.feeData={status:'Unpaid', notificationDate:new Date().toISOString()}; saveDB(); alert("Sent"); loadStudentProfile(); }
+        function forwardFeeToMgmt(sid) { db.students.find(x=>x.id===sid).feeData.status='Pending Management'; saveDB(); alert("Forwarded"); loadStudentProfile(); }
+
+        // STUDENT
+        function loadStudentData() {
+            document.getElementById('stNameDisplay').innerText=currentUser.name; document.getElementById('stIdDisplay').innerText="ID: "+currentUser.id;
+            const al=document.getElementById('studentAssignmentsList'); al.innerHTML='';
+            db.teachers.forEach(t=>t.classes.forEach(c=>{ if(c.students.includes(currentUser.id)) c.assignments.forEach(a=>{ if(!currentUser.records.some(r=>r.type==='assignment'&&r.task===a.title)) al.innerHTML+=`<div class="assignment-item"><strong>${a.title}</strong><br><small>Due: ${a.dueDate}</small><div class="input-group input-group-sm mt-1"><input type="file" id="sub-${a.id}" class="form-control"><button class="btn btn-primary" onclick="submitAssignment('${a.id}','${a.title}','${a.dueDate}')">Submit</button></div></div>`; }); }));
+            const at=document.getElementById('stAttendanceBody'), rt=document.getElementById('stResultsBody'); at.innerHTML=''; rt.innerHTML=''; let tm=0, cm=0;
+            currentUser.records.forEach(r => { if(r.type==='rec') at.innerHTML+=`<tr><td>${r.date}</td><td>${r.status}</td></tr>`; else { rt.innerHTML+=`<tr><td>${r.date}</td><td>${r.task}</td><td>${r.marks} ${r.isLate?'(LATE)':''}</td></tr>`; if(!isNaN(r.marks)) { tm+=parseInt(r.marks); cm++; } } });
+            if(cm>0 && (tm/cm)<40) document.getElementById('stBadBadge').classList.remove('d-none');
+        }
+        function submitAssignment(aid,t,d) { const f=document.getElementById(`sub-${aid}`); if(f.files.length===0) return alert("Select file"); currentUser.records.push({type:'assignment', date:getToday(), task:t, answer:f.files[0].name, status:'Submitted', marks:'-', isLate:getToday()>d}); saveDB(); alert("Submitted"); loadStudentData(); }
+
+        // PARENT
+        function loadParentData() {
+            document.getElementById('parentChildName').innerText=currentUser.name;
+            const tb=document.getElementById('parentTableBody'); tb.innerHTML=''; let tm=0, cm=0;
+            currentUser.records.forEach(r => { tb.innerHTML+=`<tr><td>${r.date}</td><td>${r.task}</td><td>${r.marks!=='-'?r.marks:r.status}</td></tr>`; if(!isNaN(r.marks)) { tm+=parseInt(r.marks); cm++; } });
+            if(cm>0 && (tm/cm)<40) document.getElementById('parentAlert').classList.remove('d-none');
+            const fs=document.getElementById('parentFeeStatus'), fa=document.getElementById('parentFeeUploadArea');
+            if(currentUser.feeData.status==='Unpaid') { fs.innerHTML='<span class="text-danger">Unpaid</span>'; fa.classList.remove('d-none'); }
+            else if(currentUser.feeData.status.includes('Pending')) { fs.innerHTML='<span class="text-warning">Verifying</span>'; fa.classList.add('d-none'); }
+            else { fs.innerHTML='<span class="text-success">Paid</span>'; fa.classList.add('d-none'); }
+            const pi=document.getElementById('parentTeacherInfo'); pi.innerHTML=''; let f=false;
+            db.teachers.forEach(t=>t.classes.forEach(c=>{ if(c.students.includes(currentUser.id)) { f=true; pi.innerHTML+=`<div class="mb-2 border-bottom"><strong>${c.name}</strong><br>Teacher: ${t.name}<br>Contact: ${t.contact}</div>`; } }));
+            if(!f) pi.innerHTML='<small>No class.</small>';
+        }
+        function uploadFee() { const f=document.getElementById('feeReceiptInput'); if(f.files.length===0) return alert("Select file"); currentUser.feeData.status='Pending Teacher Review'; currentUser.feeData.receipt=f.files[0].name; saveDB(); alert("Uploaded"); loadParentData(); }
+    </script>
+</body>
+</html>
